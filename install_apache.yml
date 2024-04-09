@@ -4,53 +4,29 @@
   become: true
   tasks:
 
-  - name: update repository index on Ubuntu/Debian
+  - name: Install Apache2 and PHP packages on Ubuntu/Debian
     apt:
+      name: 
+        - apache2
+        - libapache2-mod-php
+      state: latest
       update_cache: yes
     when: ansible_distribution in ["Debian", "Ubuntu"]
   
-  - name: update repository index on CentOS
+  - name: Install Httpd and PHP packages on CentOS
     yum:
+      name: 
+        - httpd
+        - php
+      state: latest
       update_cache: yes
     when: ansible_distribution == "CentOS"
 
-  - name: update repository index on Fedora
+  - name: Install Httpd and PHP packages on Fedora
     dnf:
+      name: 
+        - httpd
+        - php
+      state: latest
       update_cache: yes
-    when: ansible_distribution == "Fedora"
-  
-  - name: install apache2 package on Ubuntu/Debian
-    apt:
-      name: apache2
-      state: latest
-    when: ansible_distribution in ["Debian", "Ubuntu"]
-
-  - name: install httpd package on CentOS
-    yum:
-      name: httpd
-      state: latest
-    when: ansible_distribution == "CentOS"
-
-  - name: install httpd package on Fedora
-    dnf:
-      name: httpd
-      state: latest
-    when: ansible_distribution == "Fedora"
-
-  - name: add php support for apache2 on Ubuntu/Debian
-    apt:
-      name: libapache2-mod-php
-      state: latest
-    when: ansible_distribution in ["Debian", "Ubuntu"]
-
-  - name: add php support for httpd for CentOS
-    yum:
-      name: php
-      state: latest
-    when: ansible_distribution == "CentOS"
-
-  - name: add php support for httpd on Fedora
-    dnf:
-      name: php
-      state: latest
     when: ansible_distribution == "Fedora"
