@@ -4,13 +4,39 @@
   become: true
   tasks:
 
-  - name: remove php support for apache2
+  - name: remove php support for apache2 on Ubuntu/Debian
     apt:
       name: libapache2-mod-php
       state: absent
-      
-  - name: remove apache2 package
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+
+  - name: remove php support for httpd for CentOS
+    yum:
+      name: php
+      state: absent
+    when: ansible_distribution == "CentOS"
+
+  - name: remove php support for httpd on Fedora
+    dnf:
+      name: php
+      state: absent
+    when: ansible_distribution == "Fedora"
+
+  - name: remove apache2 package on Ubuntu/Debian
     apt:
       name: apache2
       state: absent
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+
+  - name: remove httpd package on CentOS
+    yum:
+      name: httpd
+      state: absent
+    when: ansible_distribution == "CentOS"
+
+  - name: remove httpd package on Fedora
+    dnf:
+      name: httpd
+      state: absent
+    when: ansible_distribution == "Fedora"
 
