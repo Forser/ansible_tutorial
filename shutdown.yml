@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+   
+   - name: Shutdown all virtual machines
+     shell:
+        cmd: shutdown -h now
