@@ -1,2 +1,5 @@
 database_package_name: mariadb-server
 database_service: mariadb
+
+ssh_users: "forser Simone"
+ssh_template_file: sshd_config_ubuntu.j2

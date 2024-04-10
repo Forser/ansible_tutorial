@@ -1,2 +1,5 @@
 fileserver_package_name: samba
 fileserver_service: samba
+
+ssh_users: "forser Simone"
+ssh_template_file: sshd_config_ubuntu.j2
