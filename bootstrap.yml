@@ -1,0 +1,51 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Install updates (CentOS)
+    tags: always
+    yum:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Install updates (Ubuntu/Debian)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution in ["Debian", "Ubuntu"]
+
+  - name: Install updates (Fedora)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "Fedora"
+
+- hosts: all
+  become: true
+  tasks:
+    
+    - name: Create Simone user
+      tags: always
+      user:
+        name: Simone
+        group: root
+
+    - name: Add ssh key for Simone
+      tags: always
+      authorized_key:
+        user: Simone
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIoTd0VqS5LZPbqrdBdieKj4m25cj+tPHjwSb67yD/WN Dedicated Ansible"
+
+    - name: Add sudo file for Simone
+      tags: always
+      copy:
+        src: sudoer_simone
+        dest: /etc/sudoers.d/simone
+        owner: root
+        group: root
+        mode: 0440

@@ -4,26 +4,36 @@
   become: true
   pre_tasks:
 
-  - name: Install updates (CentOS)
+  - name: Update repository cache (CentOS)
     tags: always
     yum:
-      update_only: yes
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "CentOS"
 
-  - name: Install updates (Ubuntu/Debian)
+  - name: Update repository cache (Ubuntu/Debian)
     tags: always
     apt:
-      upgrade: dist
       update_cache: yes
+    changed_when: false
     when: ansible_distribution in ["Debian", "Ubuntu"]
 
-  - name: Install updates (Fedora)
+  - name: Update repository cache (Fedora)
     tags: always
     dnf:
-      update_only: yes
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Fedora"
+
+- hosts: all
+  become: true
+  tasks:
+
+    - name: Add ssh key for Simone
+      tags: always
+      authorized_key:
+        user: Simone
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIoTd0VqS5LZPbqrdBdieKj4m25cj+tPHjwSb67yD/WN Dedicated Ansible"
 
 - hosts: workstations
   become: true
