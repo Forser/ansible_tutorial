@@ -1,0 +1,2 @@
+fileserver_package_name: samba
+fileserver_service: samba

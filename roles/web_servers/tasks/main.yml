@@ -1,61 +1,26 @@
-- name: Install Apache2 and PHP packages on Ubuntu/Debian
-  tags: apache, apache2, ubuntu, debian
-  apt:
+- name: Install Apache and PHP packages
+  tags: apache, httpd, php
+  package:
     name: 
-      - apache2
-      - libapache2-mod-php
+      - "{{ apache_package_name }}"
+      - "{{ php_package_name }}"
     state: latest
-  when: ansible_distribution in ["Debian", "Ubuntu"]
 
-- name: Install Httpd and PHP packages on CentOS
-  tags: apache, httpd, centos
-  yum:
-    name: 
-      - httpd
-      - php
-    state: latest
-  when: ansible_distribution == "CentOS"
-
-- name: Start httpd (CentOS)
-  tags: apache, httpd, centos
+- name: Start and enable Apache service
+  tags: apache, httpd
   service:
-    name: httpd
+    name: "{{ apache_service }}"
     state: started
     enabled: yes
-  when: ansible_distribution == "CentOS"
-
-- name: Install Httpd and PHP packages on Fedora
-  tags: apache, httpd, fedora
-  dnf:
-    name: 
-      - httpd
-      - php
-    state: latest
-  when: ansible_distribution == "Fedora"
-
-- name: Start httpd (Fedora)
-  tags: apache, httpd, fedora
-  service:
-    name: httpd
-    state: started
-    enabled: yes
-  when: ansible_distribution == "Fedora"
 
 - name: Change e-mail address for Default site (Ubuntu/Debian)
   tags: apache, apache2, ubuntu
   replace:
     path: /etc/apache2/sites-available/000-default.conf
     regexp: '^(\t+)ServerAdmin(\s+.*)?$'
-    replace: '\tServerAdmin test@test.com'
+    replace: '\tServerAdmin someone@someone.net'
   when: ansible_distribution in ["Debian", "Ubuntu"]
-  register: apache2
-
-- name: Restart apache2 (Ubuntu/Debian)
-  tags: apache, apache2, debian, ubuntu
-  service:
-    name: apache2
-    state: restarted
-  when: apache2.changed
+  notify: restart_apache
 
 - name: Change e-mail address for admin in Httpd (CentOS/Fedora)
   tags: apache, centos, httpd, fedora
@@ -64,14 +29,7 @@
     regexp: '^ServerAdmin'
     line: ServerAdmin test@test.com
   when: ansible_distribution in ["CentOS","Fedora"]
-  register: httpd
-
-- name: Restart httpd (CentOS/Fedora)
-  tags: apache, httpd, centos, fedora
-  service:
-    name: httpd
-    state: restarted
-  when: httpd.changed
+  notify: restart_apache
 
 - name: Copy default html file for site
   tags: apache, apache2, httpd

@@ -2,5 +2,12 @@
   tags: samba
   package:
     name:
-      - samba
+      - "{{ fileserver_package_name }}"
     state: latest
+
+- name: Start and enable Samba service
+  tags: samba
+  service:
+   name: "{{ fileserver_service }}"
+   state: started
+   enabled: yes

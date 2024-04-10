@@ -1,23 +1,13 @@
-- name: Install MariaDB package (CentOS)
-  tags: mariadb, centos
-  yum:
+- name: Install MariaDB package
+  tags: mariadb
+  package:
     name:
-      - mariadb
+      - "{{ database_package_name }}"
     state: latest
-  when: ansible_distribution == "CentOS"
 
-- name: Install MariaDB package (Fedora)
-  tags: mariadb, fedora
-  dnf:
-    name:
-      - mariadb
-    state: latest
-  when: ansible_distribution == "Fedora"
-
-- name: Install MariaDB package (Ubuntu/Debian)
-  tags: mariadb, ubuntu, debian
-  apt:
-    name:
-      - mariadb-server
-    state: latest
-  when: ansible_distribution in ["Debian", "Ubuntu"]
+- name: Start and enable MariaDB service
+  tags: mariadb
+  service:
+    name: "{{ database_service }}"
+    state: started
+    enabled: yes
