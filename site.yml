@@ -27,153 +27,25 @@
 
 - hosts: all
   become: true
-  tasks:
-
-    - name: Add ssh key for Simone
-      tags: always
-      authorized_key:
-        user: Simone
-        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIoTd0VqS5LZPbqrdBdieKj4m25cj+tPHjwSb67yD/WN Dedicated Ansible"
+  roles:
+   - base
 
 - hosts: workstations
   become: true
-  tasks:
-    
-    - name: Install unzip
-      package:
-        name: unzip
-
-    - name: Install Terraform
-      unarchive:
-        src: https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
-        dest: /usr/local/bin
-        remote_src: yes
-        owner: root
-        group: root
+  roles:
+   - workstations
 
 - hosts: web_servers
   become: true
-  tasks:
-    
-  - name: Install Apache2 and PHP packages on Ubuntu/Debian
-    tags: apache, apache2, ubuntu, debian
-    apt:
-      name: 
-        - apache2
-        - libapache2-mod-php
-      state: latest
-    when: ansible_distribution in ["Debian", "Ubuntu"]
-  
-  - name: Install Httpd and PHP packages on CentOS
-    tags: apache, httpd, centos
-    yum:
-      name: 
-        - httpd
-        - php
-      state: latest
-    when: ansible_distribution == "CentOS"
-
-  - name: Start httpd (CentOS)
-    tags: apache, httpd, centos
-    service:
-      name: httpd
-      state: started
-      enabled: yes
-    when: ansible_distribution == "CentOS"
-
-  - name: Install Httpd and PHP packages on Fedora
-    tags: apache, httpd, fedora
-    dnf:
-      name: 
-        - httpd
-        - php
-      state: latest
-    when: ansible_distribution == "Fedora"
-
-  - name: Start httpd (Fedora)
-    tags: apache, httpd, fedora
-    service:
-      name: httpd
-      state: started
-      enabled: yes
-    when: ansible_distribution == "Fedora"
-
-  - name: Change e-mail address for Default site (Ubuntu/Debian)
-    tags: apache, apache2, ubuntu
-    replace:
-      path: /etc/apache2/sites-available/000-default.conf
-      regexp: '^(\t+)ServerAdmin(\s+.*)?$'
-      replace: '\tServerAdmin test@test.com'
-    when: ansible_distribution in ["Debian", "Ubuntu"]
-    register: apache2
-
-  - name: Restart apache2 (Ubuntu/Debian)
-    tags: apache, apache2, debian, ubuntu
-    service:
-      name: apache2
-      state: restarted
-    when: apache2.changed
-
-  - name: Change e-mail address for admin in Httpd (CentOS/Fedora)
-    tags: apache, centos, httpd, fedora
-    lineinfile:
-      path: /etc/httpd/conf/httpd.conf
-      regexp: '^ServerAdmin'
-      line: ServerAdmin test@test.com
-    when: ansible_distribution in ["CentOS","Fedora"]
-    register: httpd
-
-  - name: Restart httpd (CentOS/Fedora)
-    tags: apache, httpd, centos, fedora
-    service:
-      name: httpd
-      state: restarted
-    when: httpd.changed
-
-  - name: Copy default html file for site
-    tags: apache, apache2, httpd
-    copy:
-      src: default_site.html
-      dest: /var/www/html/index.html
-      owner: root
-      group: root
-      mode: 0644
+  roles:
+   - web_servers
 
 - hosts: db_servers
   become: true
-  tasks:
-   
-  - name: Install MariaDB package (CentOS)
-    tags: mariadb, centos
-    yum:
-      name:
-        - mariadb
-      state: latest
-    when: ansible_distribution == "CentOS"
-
-  - name: Install MariaDB package (Fedora)
-    tags: mariadb, fedora
-    dnf:
-      name:
-        - mariadb
-      state: latest
-    when: ansible_distribution == "Fedora"
-
-  - name: Install MariaDB package (Ubuntu/Debian)
-    tags: mariadb, ubuntu, debian
-    apt:
-      name:
-        - mariadb-server
-      state: latest
-    when: ansible_distribution in ["Debian", "Ubuntu"]
+  roles:
+   - db_servers
 
 - hosts: file_servers
   become: true
-  tasks:
-   
-  - name: Install Samba package
-    tags: samba
-    package:
-      name:
-        - samba
-      state: latest
+  roles:
+   - file_servers
